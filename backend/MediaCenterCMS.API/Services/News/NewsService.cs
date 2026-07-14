@@ -67,4 +67,19 @@ public class NewsService : INewsService
             CreatedBy = string.Empty
         };
     }
+    public async Task<IEnumerable<NewsResponse>> GetAllAsync()
+    {
+    return await _context.News
+        .Include(n => n.Creator)
+        .Select(n => new NewsResponse
+        {
+            NewsId = n.NewsId,
+            Title = n.Title,
+            Content = n.Content,
+            ExpirationDate = n.ExpirationDate,
+            CreatedAt = n.CreatedAt,
+            CreatedBy = n.Creator.Username
+        })
+        .ToListAsync();
+    }
 }

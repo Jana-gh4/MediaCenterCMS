@@ -32,6 +32,13 @@ public class NewsController : ControllerBase
 
         return Ok(result);
     }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var news = await _newsService.GetAllAsync();
+
+        return Ok(news);
+    }
 }
 
 

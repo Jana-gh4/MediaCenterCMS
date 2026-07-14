@@ -7,4 +7,6 @@ public interface INewsService
     Task<NewsResponse> CreateAsync(
         CreateNewsRequest request,
         int userId);
+
+    Task<IEnumerable<NewsResponse>> GetAllAsync();
 }
