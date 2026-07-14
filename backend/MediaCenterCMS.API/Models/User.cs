@@ -14,6 +14,8 @@ public class User
 
     public bool IsActive { get; set; } = true;
 
+    public DateTime? LastLoginAt { get; set; }
+
     // Navigation Property
     public Role Role { get; set; } = null!;
 }

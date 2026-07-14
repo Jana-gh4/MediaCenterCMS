@@ -18,9 +18,28 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        //Relationships
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Users)
             .WithOne(u => u.Role)
             .HasForeignKey(u => u.RoleId);
+
+        //Constraints
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+        
+        //Seed Data
+        modelBuilder.Entity<Role>().HasData(
+            new Role
+            {
+                RoleId = 1,
+                Name = "Admin"
+            },
+            new Role
+            {
+                RoleId = 2,
+                Name = "Editor"
+            });
     }
 }
