@@ -30,8 +30,7 @@ public class DatabaseSeeder
             IsActive = true
         };
 
-        admin.PasswordHash = passwordHasher.HashPassword(admin, "admin123");
-
+        admin.PasswordHash = passwordHasher.HashPassword(admin, "Admin@123");
         _context.Users.Add(admin);
 
         await _context.SaveChangesAsync();
