@@ -22,6 +22,8 @@ public class AppDbContext : DbContext
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    public DbSet<Media> Media => Set<Media>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -121,5 +123,19 @@ public class AppDbContext : DbContext
                 RoleId = 2,
                 Name = "Editor"
             });
-    }
+
+        // Media Uploader
+        modelBuilder.Entity<Media>()
+            .HasOne(m => m.Uploader)
+            .WithMany(u => u.UploadedMedia)
+            .HasForeignKey(m => m.UploadedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // NewsVersion Cover Media
+        modelBuilder.Entity<NewsVersion>()
+            .HasOne(v => v.CoverMedia)
+            .WithMany()
+            .HasForeignKey(v => v.CoverMediaId)
+            .OnDelete(DeleteBehavior.SetNull);
+            }
 }

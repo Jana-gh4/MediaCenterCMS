@@ -34,4 +34,7 @@ public ICollection<ApprovalRequest> ReviewedApprovals { get; set; } = new List<A
 
 // Audit Logs
 public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+
+public ICollection<Media> UploadedMedia { get; set; }
+    = new List<Media>();
 }

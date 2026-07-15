@@ -4,16 +4,25 @@ using MediaCenterCMS.API.Enums;
 using MediaCenterCMS.API.Models;
 using Microsoft.EntityFrameworkCore;
 using NewsEntity = MediaCenterCMS.API.Models.News;
+using MediaCenterCMS.API.Services.Audit;
+using MediaCenterCMS.API.Services.Media;
 
 namespace MediaCenterCMS.API.Services.News;
 
 public class NewsService : INewsService
 {
     private readonly AppDbContext _context;
+    private readonly IAuditService _auditService;
+    private readonly IMediaService _mediaService;
 
-    public NewsService(AppDbContext context)
+    public NewsService(
+        AppDbContext context,
+        IAuditService auditService,
+        IMediaService mediaService)
     {
         _context = context;
+        _auditService = auditService;
+        _mediaService = mediaService;
     }
 
     public async Task<NewsResponse> CreateAsync(
@@ -36,12 +45,24 @@ public class NewsService : INewsService
         _context.News.Add(news);
         await _context.SaveChangesAsync();
 
+        int? coverMediaId = null;
+
+        if (request.CoverImage != null)
+        {
+            var uploadResult = await _mediaService.UploadAsync(
+                request.CoverImage,
+                userId);
+
+            coverMediaId = uploadResult.MediaId;
+        }
+
         var version = new NewsVersion
         {
             NewsId = news.NewsId,
             VersionNumber = 1,
             Title = news.Title,
             Content = news.Content,
+            CoverMediaId = coverMediaId,
             CreatedBy = userId,
             CreatedAt = DateTime.UtcNow,
             ApprovalStatus = ApprovalStatus.Pending
@@ -51,6 +72,12 @@ public class NewsService : INewsService
         await _context.SaveChangesAsync();
 
         await transaction.CommitAsync();
+
+        await _auditService.LogAsync(
+            userId,
+            "Create News",
+            "News",
+            news.NewsId);
 
        var creatorUsername = await _context.Users
         .Where(u => u.UserId == userId)
@@ -75,23 +102,31 @@ public class NewsService : INewsService
 }
     public async Task<IEnumerable<NewsResponse>> GetAllAsync()
     {
-    return await _context.News
-        .Include(n => n.Creator)
-        .Select(n => new NewsResponse
-        {
-            NewsId = n.NewsId,
-            Title = n.Title,
-            Content = n.Content,
-            ExpirationDate = n.ExpirationDate,
-            CreatedAt = n.CreatedAt,
-            CreatedBy = n.Creator.Username
-        })
-        .ToListAsync();
+        return await _context.News
+            .Include(n => n.Creator)
+            .Include(n => n.CurrentVersion)
+                .ThenInclude(v => v.CoverMedia)
+            .Select(n => new NewsResponse
+            {
+                NewsId = n.NewsId,
+                Title = n.Title,
+                Content = n.Content,
+                ExpirationDate = n.ExpirationDate,
+                CreatedAt = n.CreatedAt,
+                CreatedBy = n.Creator.Username,
+                CoverImagePath = n.CurrentVersion != null &&
+                                n.CurrentVersion.CoverMedia != null
+                    ? n.CurrentVersion.CoverMedia.FilePath
+                    : null
+            })
+            .ToListAsync();
     }
     public async Task<NewsResponse?> GetByIdAsync(int id)
     {
         return await _context.News
             .Include(n => n.Creator)
+            .Include(n => n.CurrentVersion)
+                .ThenInclude(v => v.CoverMedia)
             .Where(n => n.NewsId == id)
             .Select(n => new NewsResponse
             {
@@ -100,7 +135,11 @@ public class NewsService : INewsService
                 Content = n.Content,
                 ExpirationDate = n.ExpirationDate,
                 CreatedAt = n.CreatedAt,
-                CreatedBy = n.Creator.Username
+                CreatedBy = n.Creator.Username,
+                CoverImagePath = n.CurrentVersion != null &&
+                                n.CurrentVersion.CoverMedia != null
+                    ? n.CurrentVersion.CoverMedia.FilePath
+                    : null
             })
             .FirstOrDefaultAsync();
     }
@@ -128,22 +167,36 @@ public class NewsService : INewsService
             news.UpdatedBy = userId;
             news.UpdatedAt = DateTime.UtcNow;
 
-            // Find the latest version number
+            // Find the latest version
             var latestVersion = await _context.NewsVersions
                 .Where(v => v.NewsId == id)
-                .MaxAsync(v => (int?)v.VersionNumber) ?? 0;
+                .OrderByDescending(v => v.VersionNumber)
+                .FirstOrDefaultAsync();
+
+            int? coverMediaId = latestVersion?.CoverMediaId;
+
+            if (request.CoverImage != null)
+            {
+                var uploadResult = await _mediaService.UploadAsync(
+                    request.CoverImage,
+                    userId);
+
+                coverMediaId = uploadResult.MediaId;
+            }
 
             // Create a new version
             var version = new NewsVersion
             {
                 NewsId = news.NewsId,
-                VersionNumber = latestVersion + 1,
+                VersionNumber = (latestVersion?.VersionNumber ?? 0) + 1,
 
                 Title = news.Title,
                 Content = news.Content,
 
                 CreatedBy = userId,
                 CreatedAt = DateTime.UtcNow,
+
+                CoverMediaId = coverMediaId,
 
                 ApprovalStatus = ApprovalStatus.Pending
             };
@@ -170,6 +223,12 @@ public class NewsService : INewsService
             version.ApprovalRequestId = approvalRequest.ApprovalRequestId;
 
             await _context.SaveChangesAsync();
+
+            await _auditService.LogAsync(
+                userId,
+                "Update News",
+                "News",
+                news.NewsId);
 
             await transaction.CommitAsync();
 

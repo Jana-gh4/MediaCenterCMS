@@ -31,4 +31,8 @@ public class NewsVersion
     public User Creator { get; set; } = null!;
 
     public ApprovalRequest? ApprovalRequest { get; set; }
+
+    public int? CoverMediaId { get; set; }
+    
+    public Media? CoverMedia { get; set; }
 }

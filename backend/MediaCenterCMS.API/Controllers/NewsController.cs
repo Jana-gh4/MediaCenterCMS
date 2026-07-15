@@ -19,7 +19,7 @@ public class NewsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateNewsRequest request)
+    public async Task<IActionResult> Create([FromForm] CreateNewsRequest request)
     {
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -53,7 +53,7 @@ public class NewsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(
         int id,
-        UpdateNewsRequest request)
+        [FromForm] UpdateNewsRequest request)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 

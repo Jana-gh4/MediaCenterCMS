@@ -9,6 +9,8 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using MediaCenterCMS.API.Services.News;
 using MediaCenterCMS.API.Services.Approval;
+using MediaCenterCMS.API.Services.Audit;
+using MediaCenterCMS.API.Services.Media;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +81,8 @@ builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IApprovalService, ApprovalService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IMediaService, MediaService>();
 
 var app = builder.Build();
 

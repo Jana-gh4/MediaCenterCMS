@@ -2,17 +2,21 @@ using MediaCenterCMS.API.Data;
 using MediaCenterCMS.API.DTOs.News;
 using Microsoft.EntityFrameworkCore;
 using MediaCenterCMS.API.Enums;
-
+using MediaCenterCMS.API.Services.Audit;
 
 namespace MediaCenterCMS.API.Services.Approval;
 
 public class ApprovalService : IApprovalService
 {
     private readonly AppDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public ApprovalService(AppDbContext context)
+    public ApprovalService(
+        AppDbContext context,
+        IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     public async Task<NewsResponse?> ApproveAsync(
@@ -54,6 +58,12 @@ public class ApprovalService : IApprovalService
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
+
+            await _auditService.LogAsync(
+                reviewerId,
+                "Approve News",
+                "NewsVersion",
+                version.NewsVersionId);
 
             return new NewsResponse
             {
@@ -103,6 +113,12 @@ public class ApprovalService : IApprovalService
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
+
+            await _auditService.LogAsync(
+                reviewerId,
+                "Reject News",
+                "NewsVersion",
+                version.NewsVersionId);
 
             return true;
         }

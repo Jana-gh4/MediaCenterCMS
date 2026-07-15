@@ -13,4 +13,6 @@ public class NewsResponse
     public DateTime CreatedAt { get; set; }
 
     public string CreatedBy { get; set; } = string.Empty;
+
+    public string? CoverImagePath { get; set; }
 }
