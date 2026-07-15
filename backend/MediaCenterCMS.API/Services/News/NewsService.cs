@@ -208,7 +208,8 @@ public class NewsService : INewsService
 
             var approvalRequest = new ApprovalRequest
             {
-                NewsId = news.NewsId,
+                EntityType = ApprovalEntityType.News,
+                EntityId = news.NewsId,
 
                 RequestedBy = userId,
                 RequestedAt = DateTime.UtcNow,

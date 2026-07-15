@@ -7,7 +7,9 @@ public class ApprovalRequest
 {
     public int ApprovalRequestId { get; set; }
 
-    public int NewsId { get; set; }
+    public ApprovalEntityType EntityType { get; set; }
+
+    public int EntityId { get; set; }
 
     public int RequestedBy { get; set; }
 
@@ -23,8 +25,6 @@ public class ApprovalRequest
     public string? RejectionReason { get; set; }
 
     // Navigation Properties
-    public News News { get; set; } = null!;
-
     public User Requester { get; set; } = null!;
 
     public User? Reviewer { get; set; }

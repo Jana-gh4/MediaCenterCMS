@@ -97,6 +97,11 @@ public class ApprovalService : IApprovalService
             if (approvalRequest == null)
                 return false;
 
+            if (approvalRequest.EntityType != ApprovalEntityType.News)
+            {
+                throw new NotImplementedException();
+            }
+
             var version = await _context.NewsVersions
                 .FirstOrDefaultAsync(v => v.ApprovalRequestId == approvalRequestId);
 

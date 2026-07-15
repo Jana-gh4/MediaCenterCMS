@@ -83,13 +83,6 @@ public class AppDbContext : DbContext
             .HasForeignKey(v => v.ApprovalRequestId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ApprovalRequest News
-        modelBuilder.Entity<ApprovalRequest>()
-            .HasOne(a => a.News)
-            .WithMany(n => n.ApprovalRequests)
-            .HasForeignKey(a => a.NewsId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         // ApprovalRequest Requester
         modelBuilder.Entity<ApprovalRequest>()
             .HasOne(a => a.Requester)

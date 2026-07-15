@@ -34,5 +34,4 @@ public class News
 
     public ICollection<NewsVersion> Versions { get; set; } = new List<NewsVersion>();
 
-    public ICollection<ApprovalRequest> ApprovalRequests { get; set; } = new List<ApprovalRequest>();
 }
