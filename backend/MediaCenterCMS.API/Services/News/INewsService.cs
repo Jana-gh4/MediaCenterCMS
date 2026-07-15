@@ -9,4 +9,9 @@ public interface INewsService
         int userId);
 
     Task<IEnumerable<NewsResponse>> GetAllAsync();
+    Task<NewsResponse?> GetByIdAsync(int id);
+    Task<NewsResponse?> UpdateAsync(
+    int id,
+    UpdateNewsRequest request,
+    int userId);
 }

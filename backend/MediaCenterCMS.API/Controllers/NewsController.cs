@@ -39,6 +39,36 @@ public class NewsController : ControllerBase
 
         return Ok(news);
     }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var news = await _newsService.GetByIdAsync(id);
+
+        if (news == null)
+            return NotFound();
+
+        return Ok(news);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(
+        int id,
+        UpdateNewsRequest request)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        var userId = int.Parse(userIdClaim.Value);
+
+        var result = await _newsService.UpdateAsync(id, request, userId);
+
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
+    }
 }
 
 

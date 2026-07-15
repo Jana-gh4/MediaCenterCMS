@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using MediaCenterCMS.API.Services.News;
+using MediaCenterCMS.API.Services.Approval;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +78,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<IApprovalService, ApprovalService>();
 
 var app = builder.Build();
 
