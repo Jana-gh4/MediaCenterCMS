@@ -24,6 +24,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Media> Media => Set<Media>();
 
+    public DbSet<GalleryImage> GalleryImages => Set<GalleryImage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -130,5 +132,27 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(v => v.CoverMediaId)
             .OnDelete(DeleteBehavior.SetNull);
+            
+            // GalleryImage Media
+            modelBuilder.Entity<GalleryImage>()
+                .HasOne(g => g.Media)
+                .WithMany()
+                .HasForeignKey(g => g.MediaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // GalleryImage ApprovalRequest
+            modelBuilder.Entity<GalleryImage>()
+                .HasOne(g => g.ApprovalRequest)
+                .WithMany()
+                .HasForeignKey(g => g.ApprovalRequestId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // GalleryImage Creator
+            modelBuilder.Entity<GalleryImage>()
+                .HasOne(g => g.Creator)
+                .WithMany(u => u.GalleryImages)
+                .HasForeignKey(g => g.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
             }
+
 }

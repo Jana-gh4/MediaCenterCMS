@@ -11,6 +11,7 @@ using MediaCenterCMS.API.Services.News;
 using MediaCenterCMS.API.Services.Approval;
 using MediaCenterCMS.API.Services.Audit;
 using MediaCenterCMS.API.Services.Media;
+using MediaCenterCMS.API.Services.GalleryImage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +84,7 @@ builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<IApprovalService, ApprovalService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
+builder.Services.AddScoped<IGalleryImageService, GalleryImageService>();
 
 var app = builder.Build();
 

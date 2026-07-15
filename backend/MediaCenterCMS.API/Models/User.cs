@@ -37,4 +37,7 @@ public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
 public ICollection<Media> UploadedMedia { get; set; }
     = new List<Media>();
+
+public ICollection<GalleryImage> GalleryImages { get; set; }
+    = new List<GalleryImage>();
 }
