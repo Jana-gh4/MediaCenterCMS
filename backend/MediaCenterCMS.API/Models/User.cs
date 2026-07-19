@@ -40,4 +40,7 @@ public ICollection<Media> UploadedMedia { get; set; }
 
 public ICollection<GalleryImage> GalleryImages { get; set; }
     = new List<GalleryImage>();
+
+public ICollection<GalleryVideo> GalleryVideos { get; set; }
+    = new List<GalleryVideo>();
 }

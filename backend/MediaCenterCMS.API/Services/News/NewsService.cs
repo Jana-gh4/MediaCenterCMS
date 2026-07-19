@@ -71,6 +71,9 @@ public class NewsService : INewsService
         _context.NewsVersions.Add(version);
         await _context.SaveChangesAsync();
 
+        news.CurrentVersionId = version.NewsVersionId;
+        await _context.SaveChangesAsync();
+
         await transaction.CommitAsync();
 
         await _auditService.LogAsync(
@@ -100,26 +103,26 @@ public class NewsService : INewsService
         throw;
     }
 }
-    public async Task<IEnumerable<NewsResponse>> GetAllAsync()
+public async Task<IEnumerable<NewsResponse>> GetAllAsync()
     {
-        return await _context.News
+        var news = await _context.News
             .Include(n => n.Creator)
             .Include(n => n.CurrentVersion)
                 .ThenInclude(v => v.CoverMedia)
-            .Select(n => new NewsResponse
-            {
-                NewsId = n.NewsId,
-                Title = n.Title,
-                Content = n.Content,
-                ExpirationDate = n.ExpirationDate,
-                CreatedAt = n.CreatedAt,
-                CreatedBy = n.Creator.Username,
-                CoverImagePath = n.CurrentVersion != null &&
-                                n.CurrentVersion.CoverMedia != null
-                    ? n.CurrentVersion.CoverMedia.FilePath
-                    : null
-            })
             .ToListAsync();
+
+        var first = news.FirstOrDefault();   // <-- Put the breakpoint here
+
+        return news.Select(n => new NewsResponse
+        {
+            NewsId = n.NewsId,
+            Title = n.Title,
+            Content = n.Content,
+            ExpirationDate = n.ExpirationDate,
+            CreatedAt = n.CreatedAt,
+            CreatedBy = n.Creator.Username,
+            CoverImagePath = n.CurrentVersion?.CoverMedia?.FilePath
+        });
     }
     public async Task<NewsResponse?> GetByIdAsync(int id)
     {

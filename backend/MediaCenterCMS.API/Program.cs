@@ -12,11 +12,23 @@ using MediaCenterCMS.API.Services.Approval;
 using MediaCenterCMS.API.Services.Audit;
 using MediaCenterCMS.API.Services.Media;
 using MediaCenterCMS.API.Services.GalleryImage;
+using MediaCenterCMS.API.Services.GalleryVideo;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -85,6 +97,7 @@ builder.Services.AddScoped<IApprovalService, ApprovalService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IGalleryImageService, GalleryImageService>();
+builder.Services.AddScoped<IGalleryVideoService, GalleryVideoService>();
 
 var app = builder.Build();
 
@@ -102,6 +115,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); 
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

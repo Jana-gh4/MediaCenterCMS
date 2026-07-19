@@ -33,6 +33,64 @@ public class ApprovalService : IApprovalService
             if (approvalRequest == null)
                 return null;
 
+            if (approvalRequest.EntityType == ApprovalEntityType.GalleryImage)
+            {
+                var galleryImage = await _context.GalleryImages
+                    .FirstOrDefaultAsync(g =>
+                        g.GalleryImageId == approvalRequest.EntityId);
+
+                if (galleryImage == null)
+                    return null;
+
+                approvalRequest.Status = ApprovalStatus.Approved;
+                approvalRequest.ReviewedBy = reviewerId;
+                approvalRequest.ReviewedAt = DateTime.UtcNow;
+
+                galleryImage.VisibilityStatus = VisibilityStatus.Visible;
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                await _auditService.LogAsync(
+                    reviewerId,
+                    "Approve Gallery Image",
+                    "GalleryImage",
+                    galleryImage.GalleryImageId);
+
+                return new NewsResponse();
+            }
+
+            if (approvalRequest.EntityType == ApprovalEntityType.GalleryVideo)
+            {
+                var galleryVideo = await _context.GalleryVideos
+                    .FirstOrDefaultAsync(v =>
+                        v.GalleryVideoId == approvalRequest.EntityId);
+
+                if (galleryVideo == null)
+                    return null;
+
+                Console.WriteLine($"Found GalleryVideo {galleryVideo.GalleryVideoId}");
+
+                approvalRequest.Status = ApprovalStatus.Approved;
+                approvalRequest.ReviewedBy = reviewerId;
+                approvalRequest.ReviewedAt = DateTime.UtcNow;
+
+                galleryVideo.VisibilityStatus = VisibilityStatus.Visible;
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                await _auditService.LogAsync(
+                    reviewerId,
+                    "Approve Gallery Video",
+                    "GalleryVideo",
+                    galleryVideo.GalleryVideoId);
+
+                return new NewsResponse();
+            }
+
             var version = await _context.NewsVersions
                 .FirstOrDefaultAsync(v =>
                     v.ApprovalRequestId == approvalRequestId);
