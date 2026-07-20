@@ -1,6 +1,6 @@
 # MediaCenterCMS
 
-A modern Media Center Content Management System (CMS) developed using **ASP.NET Core Web API** and **React**.
+A Media Center Content Management System (CMS) developed using **ASP.NET Core Web API** and **React**.
 
 The system enables administrators to manage news articles, image galleries, video galleries, approval workflows, and audit logs through a clean and responsive dashboard.
 
