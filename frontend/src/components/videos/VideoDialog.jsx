@@ -13,38 +13,38 @@ import {
 
 const BASE_URL = "http://localhost:5202/";
 
-export default function ImageDialog({
+export default function VideoDialog({
   open,
   onClose,
   onSave,
   mode = "create",
-  image = null,
+  video = null,
 }) {
   const [title, setTitle] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
-    if (image) {
-      setTitle(image.title || "");
+    if (video) {
+      setTitle(video.title || "");
     } else {
       setTitle("");
-      setSelectedImage(null);
+      setSelectedVideo(null);
     }
-  }, [image, open]);
+  }, [video, open]);
 
   const handleSave = () => {
     const formData = new FormData();
 
     formData.append("Title", title);
 
-    if (selectedImage) {
-      formData.append("Image", selectedImage);
+    if (selectedVideo) {
+      formData.append("Video", selectedVideo);
     }
 
     onSave(formData);
 
     setTitle("");
-    setSelectedImage(null);
+    setSelectedVideo(null);
   };
 
   return (
@@ -55,14 +55,14 @@ export default function ImageDialog({
       fullWidth
     >
       <DialogTitle>
-        {mode === "create" && "إضافة صورة"}
-        {mode === "view" && "عرض الصورة"}
+        {mode === "create" && "إضافة فيديو"}
+        {mode === "view" && "عرض الفيديو"}
       </DialogTitle>
 
       <DialogContent>
         <Stack spacing={3} mt={1}>
           <TextField
-            label="عنوان الصورة"
+            label="عنوان الفيديو"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
@@ -74,30 +74,27 @@ export default function ImageDialog({
               variant="outlined"
               component="label"
             >
-              اختيار صورة
+              اختيار فيديو
 
               <input
                 hidden
                 type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setSelectedImage(e.target.files[0])
-                }
+                accept="video/*"
+                onChange={(e) => setSelectedVideo(e.target.files[0])}
               />
             </Button>
           )}
 
           {mode === "view" && (
             <>
-              {image?.imagePath ? (
+              {video?.videoPath ? (
                 <Box
-                  component="img"
-                  src={`${BASE_URL}${image.imagePath}`}
-                  alt={image.title}
+                  component="video"
+                  controls
+                  src={`${BASE_URL}${video.videoPath}`}
                   sx={{
                     width: "100%",
                     maxHeight: 350,
-                    objectFit: "contain",
                     borderRadius: 2,
                     border: "1px solid #ddd",
                   }}
@@ -112,21 +109,20 @@ export default function ImageDialog({
                     color: "text.secondary",
                   }}
                 >
-                  لا توجد صورة
+                  لا يوجد فيديو
                 </Box>
               )}
             </>
           )}
 
-          {mode !== "view" && selectedImage && (
+          {mode !== "view" && selectedVideo && (
             <Box
-              component="img"
-              src={URL.createObjectURL(selectedImage)}
-              alt="Preview"
+              component="video"
+              controls
+              src={URL.createObjectURL(selectedVideo)}
               sx={{
                 width: "100%",
                 maxHeight: 300,
-                objectFit: "contain",
                 borderRadius: 2,
                 border: "1px solid #ddd",
               }}

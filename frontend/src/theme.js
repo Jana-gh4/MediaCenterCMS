@@ -1,14 +1,71 @@
-export const colors = {
-  primary: "#006C45",
-  primaryLight: "#E8F5F0",
+import { createTheme } from "@mui/material/styles";
+import { colors } from "./colors";
 
-  background: "#F5F7FA",
+const theme = createTheme({
+  direction: "rtl",
 
-  card: "#FFFFFF",
+  palette: {
+    primary: {
+      main: colors.primary,
+    },
+    background: {
+      default: colors.background,
+      paper: colors.card,
+    },
+    text: {
+      primary: colors.text,
+      secondary: colors.subtitle,
+    },
+  },
 
-  border: "#E5E7EB",
+  typography: {
+    fontFamily: "'Tajawal', sans-serif",
 
-  text: "#1F2937",
+    h4: {
+      fontWeight: 700,
+    },
+    h5: {
+      fontWeight: 700,
+    },
+    h6: {
+      fontWeight: 500,
+    },
+    button: {
+      fontWeight: 500,
+      textTransform: "none",
+    },
+  },
 
-  subtitle: "#6B7280",
-};
+  shape: {
+    borderRadius: 14,
+  },
+
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+        },
+      },
+    },
+
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 18,
+        },
+      },
+    },
+
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+          boxShadow: "none",
+        },
+      },
+    },
+  },
+});
+
+export default theme;

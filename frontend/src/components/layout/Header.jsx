@@ -6,7 +6,7 @@ import {
   Box,
 } from "@mui/material";
 
-import { colors } from "../../theme";
+import { colors } from "../../colors";
 
 export default function Header() {
   return (

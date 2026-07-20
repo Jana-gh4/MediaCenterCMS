@@ -1,7 +1,11 @@
+import { useEffect, useState } from "react";
+
 import Layout from "../../components/layout/Layout";
 import PageTitle from "../../components/common/PageTitle";
 import StatCard from "../../components/common/StatCard";
 import ServiceCard from "../../components/common/ServiceCard";
+
+import { getDashboard } from "../../services/dashboard";
 
 import {
   Article,
@@ -14,9 +18,31 @@ import {
   Typography,
 } from "@mui/material";
 
-import { colors } from "../../theme";
+import { colors } from "../../colors";
 
 export default function Home() {
+
+  const [stats, setStats] = useState({
+    newsCount: 0,
+    imagesCount: 0,
+    videosCount: 0,
+    pendingApprovals: 0,
+  });
+
+  const loadDashboard = async () => {
+    try {
+      const data = await getDashboard();
+      console.log(data);
+      setStats(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
   return (
     <Layout>
 
@@ -37,16 +63,32 @@ export default function Home() {
 
       <Grid container spacing={3} mb={6}>
 
-        <Grid item xs={12} md={4}>
-          <StatCard title="الأخبار" value="12" />
+        <Grid item xs={12} md={3}>
+          <StatCard
+            title="الأخبار"
+            value={stats.newsCount}
+          />
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <StatCard title="الصور" value="35" />
+        <Grid item xs={12} md={3}>
+          <StatCard
+            title="الصور"
+            value={stats.imagesCount}
+          />
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <StatCard title="الفيديوهات" value="8" />
+        <Grid item xs={12} md={3}>
+          <StatCard
+            title="الفيديوهات"
+            value={stats.videosCount}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <StatCard
+            title="طلبات الاعتماد"
+            value={stats.pendingApprovals}
+          />
         </Grid>
 
       </Grid>

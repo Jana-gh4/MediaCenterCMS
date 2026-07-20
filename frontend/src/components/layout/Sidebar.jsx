@@ -17,8 +17,8 @@ import {
   Logout,
 } from "@mui/icons-material";
 
-import { Link } from "react-router-dom";
-import { colors } from "../../theme";
+import { Link, useNavigate } from "react-router-dom";
+import { colors } from "../../colors";
 
 const menuItems = [
   { text: "الرئيسية", icon: <Home />, path: "/home" },
@@ -30,6 +30,16 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear saved login data if you have any
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Go back to the login page
+    navigate("/");
+  };
   return (
     <Box
         sx={{
@@ -83,6 +93,7 @@ export default function Sidebar() {
         ))}
 
         <ListItemButton
+          onClick={handleLogout}
           sx={{
             mt: 3,
             mx: 1,

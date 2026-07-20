@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { colors } from "../../theme";
+import { colors } from "../../colors";
 
 export default function Layout({ children }) {
   return (
@@ -16,6 +16,7 @@ export default function Layout({ children }) {
       <Box
         sx={{
           display: "flex",
+          flexDirection: "row-reverse",
           gap: 2,
         }}
       >

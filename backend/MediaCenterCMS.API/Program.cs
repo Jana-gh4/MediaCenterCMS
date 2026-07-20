@@ -13,6 +13,7 @@ using MediaCenterCMS.API.Services.Audit;
 using MediaCenterCMS.API.Services.Media;
 using MediaCenterCMS.API.Services.GalleryImage;
 using MediaCenterCMS.API.Services.GalleryVideo;
+using MediaCenterCMS.API.Services.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,7 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddScoped<IGalleryImageService, GalleryImageService>();
 builder.Services.AddScoped<IGalleryVideoService, GalleryVideoService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
 

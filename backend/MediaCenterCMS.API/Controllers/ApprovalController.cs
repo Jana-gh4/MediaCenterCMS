@@ -18,6 +18,14 @@ public class ApprovalController : ControllerBase
         _approvalService = approvalService;
     }
 
+    [HttpGet]
+public async Task<IActionResult> GetPending()
+    {
+        var requests = await _approvalService.GetPendingAsync();
+
+        return Ok(requests);
+    }
+
     [HttpPost("{id}/approve")]
     public async Task<IActionResult> Approve(int id)
     {

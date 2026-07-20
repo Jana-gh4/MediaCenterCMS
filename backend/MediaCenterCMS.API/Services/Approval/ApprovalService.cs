@@ -1,4 +1,5 @@
 using MediaCenterCMS.API.Data;
+using MediaCenterCMS.API.DTOs.Approval;
 using MediaCenterCMS.API.DTOs.News;
 using Microsoft.EntityFrameworkCore;
 using MediaCenterCMS.API.Enums;
@@ -17,6 +18,68 @@ public class ApprovalService : IApprovalService
     {
         _context = context;
         _auditService = auditService;
+    }
+
+    public async Task<IEnumerable<ApprovalResponse>> GetPendingAsync()
+    {
+        var requests = await _context.ApprovalRequests
+            .Include(a => a.Requester)
+            .Where(a => a.Status == ApprovalStatus.Pending)
+            .OrderByDescending(a => a.RequestedAt)
+            .ToListAsync();
+
+        var result = new List<ApprovalResponse>();
+
+        foreach (var request in requests)
+        {
+            var title = string.Empty;
+
+            switch (request.EntityType)
+            {
+                case ApprovalEntityType.News:
+
+                    var version = await _context.NewsVersions
+                        .FirstOrDefaultAsync(v =>
+                            v.ApprovalRequestId == request.ApprovalRequestId);
+
+                    title = version?.Title ?? "News";
+
+                    break;
+
+                case ApprovalEntityType.GalleryImage:
+
+                    var image = await _context.GalleryImages
+                        .FirstOrDefaultAsync(g =>
+                            g.GalleryImageId == request.EntityId);
+
+                    title = image?.Title ?? "Image";
+
+                    break;
+
+                case ApprovalEntityType.GalleryVideo:
+
+                    var video = await _context.GalleryVideos
+                        .FirstOrDefaultAsync(v =>
+                            v.GalleryVideoId == request.EntityId);
+
+                    title = video?.Title ?? "Video";
+
+                    break;
+            }
+
+            result.Add(new ApprovalResponse
+            {
+                ApprovalRequestId = request.ApprovalRequestId,
+                EntityType = request.EntityType.ToString(),
+                EntityId = request.EntityId,
+                Title = title,
+                RequestedBy = request.Requester.Username,
+                RequestedAt = request.RequestedAt,
+                Status = request.Status.ToString()
+            });
+        }
+
+        return result;
     }
 
     public async Task<NewsResponse?> ApproveAsync(

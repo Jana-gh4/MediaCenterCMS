@@ -1,5 +1,5 @@
 import { Card, CardContent, Typography } from "@mui/material";
-import { colors } from "../../theme";
+import { colors } from "../../colors";
 import { useNavigate } from "react-router-dom";
 
 export default function ServiceCard({
